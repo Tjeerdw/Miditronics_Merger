@@ -6,6 +6,8 @@
    You must select MIDIx4 from the "Tools > USB Type" menu
 
    This example code is in the public domain.
+   
+   Original Merger code belongs to https://github.com/Deftaudio
 */
 
 #include <MIDI.h>
