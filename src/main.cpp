@@ -13,6 +13,26 @@
 #include <MIDI.h>
 //#include <USBHost_t36.h> // access to USB MIDI devices (plugged into 2nd USB port)
 
+bool reactToKoppels = true;
+
+int koppels[15][4] = {
+// Midi Value, enabled, note source ch, note destination ch
+  {1,0,1,2}, // I+II
+  {2,0,1,3}, // I+III
+  {3,0,1,4}, // I+IV
+  {7,0,2,3}, // II+III
+  {8,0,2,4}, // II+IV
+  {11,0,3,4}, // III+IV
+  {20,0,1,5}, // I+V
+  {21,0,2,5}, // II+V
+  {22,0,3,5}, // III+V
+  {23,0,3,5}, // IV+V
+  {24,0,6,1}, // P+I
+  {25,0,6,2}, // P+II  
+  {26,0,6,3}, // P+III
+  {27,0,6,4}, // P+IV
+  {28,0,6,2}, // P+II
+};
 
 // Create the Serial MIDI ports
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI1);
