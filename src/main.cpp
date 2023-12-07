@@ -11,7 +11,7 @@
 */
 
 #include <MIDI.h>
-#include <USBHost_t36.h> // access to USB MIDI devices (plugged into 2nd USB port)
+//#include <USBHost_t36.h> // access to USB MIDI devices (plugged into 2nd USB port)
 
 
 // Create the Serial MIDI ports
