@@ -83,7 +83,6 @@ void loop() {
     byte data1 = MIDI1.getData1();
     byte data2 = MIDI1.getData2();
 
-    // forward the message to USB MIDI virtual cable #0
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);    
     }   
@@ -97,7 +96,6 @@ void loop() {
     byte data1 = MIDI2.getData1();
     byte data2 = MIDI2.getData2();
 
-    // forward the message to USB MIDI virtual cable #1
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);    
     }   
@@ -111,7 +109,6 @@ void loop() {
     byte data1 = MIDI3.getData1();
     byte data2 = MIDI3.getData2();
 
-    // forward the message to USB MIDI virtual cable #0
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);    
     }   
