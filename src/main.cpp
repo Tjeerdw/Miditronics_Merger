@@ -1,19 +1,13 @@
-/* Create a "class compliant " USB to 3 MIDI IN and 3 MIDI OUT interface.
-
-   MIDI receive (6N138 optocoupler) input circuit and series resistor
-   outputs need to be connected to Serial1, Serial2 and Serial3.
-
-   You must select MIDIx4 from the "Tools > USB Type" menu
-
-   This example code is in the public domain.
-
-   Original Merger code belongs to https://github.com/Deftaudio
-*/
+//  This example code is in the public domain.
+//  Original Merger code belongs to https://github.com/Deftaudio 
 
 #include <MIDI.h>
 //#include <USBHost_t36.h> // access to USB MIDI devices (plugged into 2nd USB port)
 
-bool reactToKoppels = true;
+#define koppelsChannel 10
+
+bool reactToKoppels = false;
+
 
 int koppels[15][4] = {
 // Midi Value, enabled, note source ch, note destination ch
@@ -43,6 +37,7 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial5, MIDI5);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial6, MIDI6);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial7, MIDI7);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial8, MIDI8);
+//MIDI_CREATE_INSTANCE(usb_serial_class, Serial, MIDIUSB);
 
 // A variable to know how long the LED has been turned on
 elapsedMillis ledOnMillis;
@@ -75,6 +70,7 @@ void setup() {
 
 void loop() {
   bool activity = false;
+ 
 
   if (MIDI1.read()) {
     // get a MIDI IN1 (Serial) message
@@ -84,7 +80,16 @@ void loop() {
     byte data2 = MIDI1.getData2();
 
     if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);    
+      MIDI8.send(type, data1, data2, channel);
+      //MIDIUSB.send(type, data1, data2, channel);
+      if (reactToKoppels) {
+        if (type == midi::NoteOff ||type == midi::NoteOn){
+          //iterate though koppel, if source channel &&enable, send to destination channel
+        }
+        if (type == midi::ControlChange && channel == koppelsChannel){
+          //iterate through koppel, look foor data 2 value, then turn on 80 or off 81
+        }
+      }
     }   
     activity = true;
   }
