@@ -2,11 +2,12 @@
 //  Original Merger code belongs to https://github.com/Deftaudio 
 
 #include <MIDI.h>
-//#include <USBHost_t36.h> // access to USB MIDI devices (plugged into 2nd USB port)
 
+//#define useUSBMIDI
 #define koppelsChannel 10
+#define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 
-bool reactToKoppels = false;
+bool reactToKoppels = true;
 
 
 int koppels[15][4] = {
@@ -37,13 +38,15 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial5, MIDI5);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial6, MIDI6);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial7, MIDI7);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial8, MIDI8);
-//MIDI_CREATE_INSTANCE(usb_serial_class, Serial, MIDIUSB);
+
 
 // A variable to know how long the LED has been turned on
 elapsedMillis ledOnMillis;
 
 void setup() {
+  #ifndef useUSBMIDI //if not using usbMIDI, we can use serial to debug.
   Serial.begin(115200);
+  #endif
   pinMode(13, OUTPUT); // LED pin
   MIDI1.begin(MIDI_CHANNEL_OMNI);
   MIDI2.begin(MIDI_CHANNEL_OMNI);
@@ -71,7 +74,7 @@ void setup() {
 void loop() {
   bool activity = false;
  
-
+#ifdef useUSBMIDI
   if (usbMIDI.read()) {
     // get a usb MIDI message
     midi::MidiType type = midi::MidiType(usbMIDI.getType()); //does casting like this work?
@@ -82,9 +85,10 @@ void loop() {
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
       usbMIDI.send(type, data1, data2, channel,0);
-      
+
       if (reactToKoppels) {
         if (type == midi::NoteOff ||type == midi::NoteOn){
+
           //iterate though koppel, if source channel &&enable, send to destination channel
         }
         if (type == midi::ControlChange && channel == koppelsChannel){
@@ -94,6 +98,7 @@ void loop() {
     }   
     activity = true;
   }
+#endif
 
   if (MIDI1.read()) {
     // get a MIDI IN1 (Serial) message
@@ -104,10 +109,14 @@ void loop() {
 
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
+
+      #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
-      //MIDIUSB.send(type, data1, data2, channel);
+      #endif
       if (reactToKoppels) {
         if (type == midi::NoteOff ||type == midi::NoteOn){
+          
+          Serial.println(LEN(koppels));
           //iterate though koppel, if source channel &&enable, send to destination channel
         }
         if (type == midi::ControlChange && channel == koppelsChannel){
@@ -127,7 +136,9 @@ void loop() {
 
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
-      usbMIDI.send(type, data1, data2, channel,0);    
+      #ifdef useUSBMIDI
+      usbMIDI.send(type, data1, data2, channel,0);
+      #endif  
     }   
     activity = true;
   }
@@ -141,7 +152,9 @@ void loop() {
 
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
-      usbMIDI.send(type, data1, data2, channel,0);    
+      #ifdef useUSBMIDI
+      usbMIDI.send(type, data1, data2, channel,0);
+      #endif    
     }   
     activity = true;
   }
@@ -155,7 +168,9 @@ void loop() {
 
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
-      usbMIDI.send(type, data1, data2, channel,0);    
+      #ifdef useUSBMIDI
+      usbMIDI.send(type, data1, data2, channel,0);
+      #endif    
     }   
     activity = true;
   }
@@ -169,7 +184,9 @@ void loop() {
 
    if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
-      usbMIDI.send(type, data1, data2, channel,0);    
+      #ifdef useUSBMIDI
+      usbMIDI.send(type, data1, data2, channel,0);
+      #endif    
     }   
     activity = true;
   }
@@ -183,7 +200,9 @@ void loop() {
 
    if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
-      usbMIDI.send(type, data1, data2, channel,0);    
+      #ifdef useUSBMIDI
+      usbMIDI.send(type, data1, data2, channel,0);
+      #endif    
     }   
     activity = true;
   }
@@ -197,7 +216,9 @@ void loop() {
 
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
-      usbMIDI.send(type, data1, data2, channel,0);    
+      #ifdef useUSBMIDI
+      usbMIDI.send(type, data1, data2, channel,0);
+      #endif    
     }   
     activity = true;
   }
