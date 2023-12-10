@@ -81,6 +81,7 @@ void loop() {
 
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
+      usbMIDI.send(type, data1, data2, channel,0);
       //MIDIUSB.send(type, data1, data2, channel);
       if (reactToKoppels) {
         if (type == midi::NoteOff ||type == midi::NoteOn){
@@ -102,7 +103,8 @@ void loop() {
     byte data2 = MIDI2.getData2();
 
     if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);    
+      MIDI8.send(type, data1, data2, channel);
+      usbMIDI.send(type, data1, data2, channel,0);    
     }   
     activity = true;
   }
@@ -115,7 +117,8 @@ void loop() {
     byte data2 = MIDI3.getData2();
 
     if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);    
+      MIDI8.send(type, data1, data2, channel);
+      usbMIDI.send(type, data1, data2, channel,0);    
     }   
     activity = true;
   }
@@ -128,7 +131,8 @@ void loop() {
     byte data2 = MIDI4.getData2();
 
     if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);    
+      MIDI8.send(type, data1, data2, channel);
+      usbMIDI.send(type, data1, data2, channel,0);    
     }   
     activity = true;
   }
@@ -141,7 +145,8 @@ void loop() {
     byte data2 = MIDI5.getData2();
 
    if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);    
+      MIDI8.send(type, data1, data2, channel);
+      usbMIDI.send(type, data1, data2, channel,0);    
     }   
     activity = true;
   }
@@ -154,7 +159,8 @@ void loop() {
     byte data2 = MIDI6.getData2();
 
    if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);    
+      MIDI8.send(type, data1, data2, channel);
+      usbMIDI.send(type, data1, data2, channel,0);    
     }   
     activity = true;
   }
@@ -167,7 +173,8 @@ void loop() {
     byte data2 = MIDI7.getData2();
 
     if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);    
+      MIDI8.send(type, data1, data2, channel);
+      usbMIDI.send(type, data1, data2, channel,0);    
     }   
     activity = true;
   }
