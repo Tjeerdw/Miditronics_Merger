@@ -21,13 +21,15 @@ int koppels[15][4] = {
   {20,0,1,5}, // I+V
   {21,0,2,5}, // II+V
   {22,0,3,5}, // III+V
-  {23,0,3,5}, // IV+V
+  {23,1,4,5}, // IV+V
   {24,0,6,1}, // P+I
   {25,0,6,2}, // P+II  
   {26,0,6,3}, // P+III
   {27,0,6,4}, // P+IV
   {28,0,6,2}, // P+II
 };
+
+int g_KoppelRows = LEN(koppels);
 
 // Create the Serial MIDI ports
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI1);
@@ -115,9 +117,15 @@ void loop() {
       #endif
       if (reactToKoppels) {
         if (type == midi::NoteOff ||type == midi::NoteOn){
-          
-          Serial.println(LEN(koppels));
-          //iterate though koppel, if source channel &&enable, send to destination channel
+          for (int i=0 ; i<g_KoppelRows;i++){
+             //Serial.printf("%d,%d,%d,%d\n",koppels[i][0],koppels[i][1],koppels[i][2],koppels[i][3]); print out koppel array
+             if ((koppels[i][1]==true) && koppels[i][2]==channel ){// koppel enabled and has matching source channel
+              MIDI8.send(type, data1, data2, koppels[i][3]);
+              #ifdef useUSBMIDI
+              usbMIDI.send(type, data1, data2, koppels[i][3],0);
+              #endif
+             } 
+          }
         }
         if (type == midi::ControlChange && channel == koppelsChannel){
           //iterate through koppel, look foor data 2 value, then turn on 80 or off 81
