@@ -72,6 +72,29 @@ void loop() {
   bool activity = false;
  
 
+  if (usbMIDI.read()) {
+    // get a usb MIDI message
+    midi::MidiType type = midi::MidiType(usbMIDI.getType()); //does casting like this work?
+    midi::Channel channel = usbMIDI.getChannel();
+    byte data1 = usbMIDI.getData1();
+    byte data2 = usbMIDI.getData2();
+
+    if (type != midi::SystemExclusive) {
+      MIDI8.send(type, data1, data2, channel);
+      usbMIDI.send(type, data1, data2, channel,0);
+      
+      if (reactToKoppels) {
+        if (type == midi::NoteOff ||type == midi::NoteOn){
+          //iterate though koppel, if source channel &&enable, send to destination channel
+        }
+        if (type == midi::ControlChange && channel == koppelsChannel){
+          //iterate through koppel, look foor data 2 value, then turn on 80 or off 81
+        }
+      }
+    }   
+    activity = true;
+  }
+
   if (MIDI1.read()) {
     // get a MIDI IN1 (Serial) message
     midi::MidiType type = MIDI1.getType();
