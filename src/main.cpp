@@ -3,7 +3,7 @@
 
 #include <MIDI.h>
 
-//#define useUSBMIDI
+#define useUSBMIDI
 #define koppelsChannel 10
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 
@@ -86,7 +86,7 @@ void loop() {
 
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
-      usbMIDI.send(type, data1, data2, channel,0);
+      //usbMIDI.send(type, data1, data2, channel,0);
 
       if (reactToKoppels) {
         if (type == midi::NoteOff ||type == midi::NoteOn){
@@ -111,7 +111,6 @@ void loop() {
 
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
-
       #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
       #endif
@@ -128,7 +127,24 @@ void loop() {
           }
         }
         if (type == midi::ControlChange && channel == koppelsChannel){
-          //iterate through koppel, look foor data 2 value, then turn on 80 or off 81
+          switch(data1) {//data1 is CC#, data 2 is Value
+            case 80: //Koppel aan
+              for (int i=0 ; i<g_KoppelRows;i++){
+                if (koppels[i][0]==data2){//matching value
+                  koppels[i][1] = 1;
+                }
+              }
+              break;
+            case 81: //koppel uit
+              for (int i=0 ; i<g_KoppelRows;i++){
+                if (koppels[i][0]==data2){ //matching value
+                  koppels[i][1] = 0;
+                }
+              }
+              break;
+            default:
+              break;
+          }
         }
       }
     }   
