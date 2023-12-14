@@ -126,6 +126,7 @@ void loop() {
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
       //usbMIDI.send(type, data1, data2, channel,0);
+      handleKoppels(type,channel,data1,data2);
     }   
     activity = true;
   }
