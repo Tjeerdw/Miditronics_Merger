@@ -2,8 +2,9 @@
 //  Original Merger code belongs to https://github.com/Deftaudio 
 
 #include <MIDI.h>
+#include <miditools.h>
 
-#define useUSBMIDI
+//#define useUSBMIDI
 #define koppelsChannel 10
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 
@@ -41,6 +42,8 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial6, MIDI6);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial7, MIDI7);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial8, MIDI8);
 
+//create midiMemory
+notesMemory ChannelMem1(1);
 
 // A variable to know how long the LED has been turned on
 elapsedMillis ledOnMillis;
