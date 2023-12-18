@@ -4,7 +4,7 @@
 #include <MIDI.h>
 #include <miditools.h>
 
-//#define useUSBMIDI
+#define useUSBMIDI
 #define koppelsChannel 10
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 
@@ -53,7 +53,7 @@ void handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte
     #ifndef useUSBMIDI
     Serial.printf("type: %d  Channel %d  data1 %d  data2 %d\n",type,channel,data1,data2);
     #endif
-    if (type == midi::NoteOff ||type == midi::NoteOn){
+    if (type == midi::NoteOff ||type == midi::NoteOn){ // iff notes, check if there is a matching couple that is enabled
       for (int i=0 ; i<g_KoppelRows;i++){
           //Serial.printf("%d,%d,%d,%d\n",koppels[i][0],koppels[i][1],koppels[i][2],koppels[i][3]); //print out koppel array
           if ((koppels[i][1]==true) && koppels[i][2]==channel ){// koppel enabled and has matching source channel
@@ -61,22 +61,26 @@ void handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte
           #ifdef useUSBMIDI
           usbMIDI.send(type, data1, data2, koppels[i][3],0);
           #endif
+          //todo:turn note on/off in midikoppelmem
           } 
       }
+      //turn note on/off in approprate midimem
     }
     if (type == midi::ControlChange && channel == koppelsChannel){
       switch(data1) {//data1 is CC#, data 2 is Value
         case 80: //Koppel aan
           for (int i=0 ; i<g_KoppelRows;i++){
-            if (koppels[i][0]==data2){//matching value
-              koppels[i][1] = 1;
+            if (koppels[i][0]==data2){//find which koppel
+              koppels[i][1] = 1; //enable matching koppel in koppel mem
+              //TODO:turn on current notes from koppelSourcemem to koppelDestination
             }
           }
           break;
         case 81: //koppel uit
           for (int i=0 ; i<g_KoppelRows;i++){
-            if (koppels[i][0]==data2){ //matching value
-              koppels[i][1] = 0;
+            if (koppels[i][0]==data2){ //find which koppel
+              koppels[i][1] = 0;  //disable matching koppel in koppel mem"
+              //TODO:turn off current notes in destinationkoppelmem
             }
           }
           break;
