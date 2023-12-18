@@ -43,7 +43,7 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial7, MIDI7);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial8, MIDI8);
 
 //create midiMemory
-notesMemory ChannelMem1(1);
+notesMemory ChannelMem1(1, MIDI8);
 
 // A variable to know how long the LED has been turned on
 elapsedMillis ledOnMillis;
