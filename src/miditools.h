@@ -5,13 +5,23 @@
 #include "MIDI.h"
 #include "miditools.h"
 
+#define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
+#define koppelsChannel 10
+#define registerChannelA 8
+#define registerChannelB 9
+
+#define KL_Value 0
+#define KL_Enabled 1
+#define KL_Source 2
+#define KL_Destination 3
+#define KL_KoppelBit 4
 
 class KoppelUnit{
     public:
         KoppelUnit(MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& midiOutPort);
         void handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2, bool sendToUSB);
-        void koppelNoteOn(byte note, int destinationchannel);
-        void koppelNoteOf(byte note, int destinationchannel);
+        void koppelNoteOn(byte note, byte velocity, int destinationchannel);
+        void koppelNoteOff(byte note, byte velocity, int destinationchannel);
 
     private:
         MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& _midiOutPort;
@@ -43,6 +53,7 @@ class KoppelUnit{
             {63,0,6,6,1}, // P+P
         };
         int g_KoppelRows;
+        int g_NumberOfNotes;
        
 };
 

@@ -4,7 +4,7 @@
 #include <MIDI.h>
 #include <miditools.h>
 
-#define useUSBMIDI
+//#define useUSBMIDI
 
 
 bool reactToKoppels = true;
@@ -56,7 +56,7 @@ void setup() {
 
 void loop() {
   bool activity = false;
- 
+
 #ifdef useUSBMIDI
   if (usbMIDI.read()) {
     // get a usb MIDI message

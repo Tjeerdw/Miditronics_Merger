@@ -1,108 +1,80 @@
 #include "miditools.h"
 
-#define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
-#define koppelsChannel 10
-#define registerChannelA 8
-#define registerChannelB 9
-
-
 KoppelUnit::KoppelUnit( MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& midiOutPort)
     :  _midiOutPort(midiOutPort)
 {   
     reactToKoppels = true;
     g_KoppelRows = LEN(koppelList);
+    g_NumberOfNotes = 128;
 }
 
-
-void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2, bool sendToUSB){
+void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2, bool sendToUSB){ //data1 is note and 80/81, data2 is velocity and value
     #ifndef useUSBMIDI
     Serial.printf("type: %d  Channel %d  data1 %d  data2 %d\n",type,channel,data1,data2);
     #endif
     
     if (type == midi::NoteOff ||type == midi::NoteOn){ //note message incoming
-        /*
-        go through koppelList, find matching source channel and enabled, could be more than one
-            if note on
-                koppelNoteOn()
-            if note off
-                koppelNoteOff()
-        */
+        for (int i=0 ; i<g_KoppelRows;i++){ //go through koppelList, find matching source channel and enabled, could be more than one
+            if ((koppelList[i][KL_Enabled]==true) && koppelList[i][KL_Source]==channel ){// koppel enabled and has matching source channel
+                if(type == midi::NoteOn){
+                    koppelNoteOn(data1,data2,koppelList[i][KL_Destination]);
+                }
+                else if(type == midi::NoteOff){
+                    koppelNoteOff(data1,data2,koppelList[i][KL_Destination]);
+                }
+            } 
+        }
+    
     }
     else if (type == midi::ControlChange && channel == koppelsChannel){ //koppel message incoming
 
-    /*
-    go through koppelList, find matching koppel
-
-    if koppel aan
-        enable in koppellist
-        search for 1:1 koppel bits in source channel, "was er al iets aan"
-            if note in desination mem is off "en nog niet aan op de destination"
-                koppelNoteOn() 
-            edit note in destination notesmem
-
-    if koppel uit
-    disable koppel in koppellist
-        search for koppelbits on in destination channel "staat er iets aan dat uit moet"
-        zet deze koppelbits uit
-        If note is now 0
-            koppelNoteOff()
-
-    */
-    
+    for (int i=0 ; i<g_KoppelRows;i++){ //go through koppelList, find matching koppel
+            if (koppelList[i][KL_Value]==data2){ //match
+                switch(data1) { //koppel on or off
+                    case 80: //Koppel aan
+                        koppelList[i][KL_Enabled] = 1; //enable matching koppel in koppel mem
+                        /*
+                        search for 1:1 koppel bits in source channel, "was er al iets aan"
+                        if note in desination mem is off "en nog niet aan op de destination"
+                            koppelNoteOn() 
+                        edit note in destination notesmem
+                        */
+                        break;
+                    case 81: //koppel uit
+                        koppelList[i][KL_Enabled] = 0; //disable matching koppel in koppel mem
+                        /*
+                        search for koppelbits on in destination channel "staat er iets aan dat uit moet"
+                        zet deze koppelbits uit
+                        If note is now 0
+                            koppelNoteOff()
+                        */
+                        break;
+                }
+            }
+        }
     }
-    else if ((type == midi::ControlChange && channel == (registerChannelA || registerChannelB))){ //register message incoming
+    else if (type == midi::ControlChange && channel == (registerChannelA || registerChannelB)){ //register message incoming
         //just pas through as usual
-    }
-    
-    
-    if (type == midi::NoteOff ||type == midi::NoteOn){ // if notes, check if there is a matching couple that is enabled
-        for (int i=0 ; i<g_KoppelRows;i++){
-            //Serial.printf("%d,%d,%d,%d\n",koppels[i][0],koppels[i][1],koppels[i][2],koppels[i][3]); //print out koppel array
-            if ((koppelList[i][1]==true) && koppelList[i][2]==channel ){// koppel enabled and has matching source channel
-            _midiOutPort.send(type, data1, data2, koppelList[i][3]);
-            #ifdef useUSBMIDI
-            usbMIDI.send(type, data1, data2, koppels[i][3],0);
-            #endif
-            //todo:turn note on/off in midikoppelmem
-            } 
-        }
-        //turn note on/off in approprate midimem
-    }
-    if (type == midi::ControlChange && channel == koppelsChannel){
-        switch(data1) {//data1 is CC#, data 2 is Value
-        case 80: //Koppel aan
-            for (int i=0 ; i<g_KoppelRows;i++){
-            if (koppelList[i][0]==data2){//find which koppel
-                koppelList[i][1] = 1; //enable matching koppel in koppel mem
-                //TODO:turn on current notes from koppelSourcemem to koppelDestination
-            }
-            }
-            break;
-        case 81: //koppel uit
-            for (int i=0 ; i<g_KoppelRows;i++){
-            if (koppelList[i][0]==data2){ //find which koppel
-                koppelList[i][1] = 0;  //disable matching koppel in koppel mem"
-                //TODO:turn off current notes in destinationkoppelmem
-            }
-            }
-            break;
-        default:
-            break;
-        }
     }
 }
 
-void koppelNoteOn(byte note, int destinationchannel){
+void KoppelUnit::koppelNoteOn(byte note, byte velocity, int destinationchannel){
+
     /*
     if note in desination mem is off
         send note to desitnation channel 
     else
         don'tsend note
     edit note in destination notesmem
+
+     _midiOutPort.send(type, data1, data2, koppelList[i][3]);
+            #ifdef useUSBMIDI
+            usbMIDI.send(type, data1, data2, koppels[i][3],0);
+            #endif
     */
 }
 
-void koppelNoteOff(byte note, int destinationchannel){
+void KoppelUnit::koppelNoteOff(byte note, byte velocity, int destinationchannel){
     /*
     edit note in destination notesmem
     if deistation mem=0
