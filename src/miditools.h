@@ -9,7 +9,7 @@
 class KoppelUnit{
     public:
         KoppelUnit(MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& midiOutPort);
-        void handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2);
+        void handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2, bool sendToUSB);
         bool reactToKoppels;
 
     private:

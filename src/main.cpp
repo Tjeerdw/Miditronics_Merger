@@ -65,11 +65,7 @@ void loop() {
     byte data1 = usbMIDI.getData1();
     byte data2 = usbMIDI.getData2();
 
-    if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);
-      //usbMIDI.send(type, data1, data2, channel,0);
-      //koppel.handleKoppels(type,channel,data1,data2);
-    }   
+    koppel.handleKoppels(type,channel,data1,data2,false); 
     activity = true;
   }
 #endif
@@ -81,13 +77,7 @@ void loop() {
     byte data1 = MIDI1.getData1();
     byte data2 = MIDI1.getData2();
     
-    if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);
-      #ifdef useUSBMIDI
-      usbMIDI.send(type, data1, data2, channel,0);
-      #endif
-      //koppel.handleKoppels(type,channel,data1,data2);
-    }   
+    koppel.handleKoppels(type,channel,data1,data2,true); 
     activity = true;
   }
 
@@ -98,13 +88,7 @@ void loop() {
     byte data1 = MIDI2.getData1();
     byte data2 = MIDI2.getData2();
 
-    if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);
-      #ifdef useUSBMIDI
-      usbMIDI.send(type, data1, data2, channel,0);
-      #endif
-      //koppel.handleKoppels(type,channel,data1,data2);
-    }   
+    koppel.handleKoppels(type,channel,data1,data2,true); 
     activity = true;
   }
 
@@ -115,13 +99,7 @@ void loop() {
     byte data1 = MIDI3.getData1();
     byte data2 = MIDI3.getData2();
 
-    if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);
-      #ifdef useUSBMIDI
-      usbMIDI.send(type, data1, data2, channel,0);
-      #endif
-      //koppel.handleKoppels(type,channel,data1,data2);  
-    }   
+    koppel.handleKoppels(type,channel,data1,data2,true); 
     activity = true;
   }
 
@@ -132,13 +110,7 @@ void loop() {
     byte data1 = MIDI4.getData1();
     byte data2 = MIDI4.getData2();
 
-    if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);
-      #ifdef useUSBMIDI
-      usbMIDI.send(type, data1, data2, channel,0);
-      #endif
-      //koppel.handleKoppels(type,channel,data1,data2);   
-    }   
+    koppel.handleKoppels(type,channel,data1,data2,true); 
     activity = true;
   }
 
@@ -149,13 +121,7 @@ void loop() {
     byte data1 = MIDI5.getData1();
     byte data2 = MIDI5.getData2();
 
-   if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);
-      #ifdef useUSBMIDI
-      usbMIDI.send(type, data1, data2, channel,0);
-      #endif
-      //koppel.handleKoppels(type,channel,data1,data2); 
-    }   
+   koppel.handleKoppels(type,channel,data1,data2,true); 
     activity = true;
   }
 
@@ -166,13 +132,7 @@ void loop() {
     byte data1 = MIDI6.getData1();
     byte data2 = MIDI6.getData2();
 
-   if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);
-      #ifdef useUSBMIDI
-      usbMIDI.send(type, data1, data2, channel,0);
-      #endif
-      //koppel.handleKoppels(type,channel,data1,data2);    
-    }   
+   koppel.handleKoppels(type,channel,data1,data2,true); 
     activity = true;
   }
 
@@ -183,13 +143,7 @@ void loop() {
     byte data1 = MIDI7.getData1();
     byte data2 = MIDI7.getData2();
 
-    if (type != midi::SystemExclusive) {
-      MIDI8.send(type, data1, data2, channel);
-      #ifdef useUSBMIDI
-      usbMIDI.send(type, data1, data2, channel,0);
-      #endif
-      //koppel.handleKoppels(type,channel,data1,data2);    
-    }   
+    koppel.handleKoppels(type,channel,data1,data2,true); 
     activity = true;
   }
 
