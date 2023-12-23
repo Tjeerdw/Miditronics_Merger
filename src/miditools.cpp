@@ -21,25 +21,37 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
     
     if (type == midi::NoteOff ||type == midi::NoteOn){ //note message incoming
         /*
-        go through koppelList, find matching source channel and enabled
+        go through koppelList, find matching source channel and enabled, could be more than one
             if note on
-                if note in desination mem is off
-                    send note to desitnation channel 
-                else
-                    don'tsend note
-                edit note in destination notesmem
-                
-             if note off
-                edit note in destination notesmem
-                if deistation mem=0
-                    send note off
-                */
+                koppelNoteOn()
+            if note off
+                koppelNoteOff()
+        */
     }
     else if (type == midi::ControlChange && channel == koppelsChannel){ //koppel message incoming
+
+    /*
+    go through koppelList, find matching koppel
+
+    if koppel aan
+        enable in koppellist
+        search for 1:1 koppel bits in source channel, "was er al iets aan"
+            if note in desination mem is off "en nog niet aan op de destination"
+                koppelNoteOn() 
+            edit note in destination notesmem
+
+    if koppel uit
+    disable koppel in koppellist
+        search for koppelbits on in destination channel "staat er iets aan dat uit moet"
+        zet deze koppelbits uit
+        If note is now 0
+            koppelNoteOff()
+
+    */
     
     }
-    else if ((type == midi::ControlChange && channel == (registerChannelA || registerChannelB)){ //register message incoming
-    
+    else if ((type == midi::ControlChange && channel == (registerChannelA || registerChannelB))){ //register message incoming
+        //just pas through as usual
     }
     
     
@@ -79,6 +91,25 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
         }
     }
 }
+
+void koppelNoteOn(byte note, int destinationchannel){
+    /*
+    if note in desination mem is off
+        send note to desitnation channel 
+    else
+        don'tsend note
+    edit note in destination notesmem
+    */
+}
+
+void koppelNoteOff(byte note, int destinationchannel){
+    /*
+    edit note in destination notesmem
+    if deistation mem=0
+        send note off
+    */
+}
+
 
 
 
