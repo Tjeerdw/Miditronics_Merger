@@ -5,32 +5,9 @@
 #include <miditools.h>
 
 #define useUSBMIDI
-#define koppelsChannel 10
-#define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
+
 
 bool reactToKoppels = true;
-
-
-int koppels[15][4] = {
-// Midi Value, enabled, note source ch, note destination ch
-  {1,0,1,2}, // I+II
-  {2,0,1,3}, // I+III
-  {3,0,1,4}, // I+IV
-  {7,0,2,3}, // II+III
-  {8,0,2,4}, // II+IV
-  {11,0,3,4}, // III+IV
-  {20,0,1,5}, // I+V
-  {21,0,2,5}, // II+V
-  {22,0,3,5}, // III+V
-  {23,0,4,5}, // IV+V
-  {24,0,6,1}, // P+I
-  {25,0,6,2}, // P+II  
-  {26,0,6,3}, // P+III
-  {27,0,6,4}, // P+IV
-  {28,0,6,2}, // P+II
-};
-
-int g_KoppelRows = LEN(koppels);
 
 // Create the Serial MIDI ports
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI1);
@@ -43,53 +20,11 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial7, MIDI7);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial8, MIDI8);
 
 //create midiMemory
-notesMemory ChannelMem1(1, MIDI8);
-
+KoppelUnit koppel(MIDI8);
+ 
 // A variable to know how long the LED has been turned on
 elapsedMillis ledOnMillis;
 
-void handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2){
-  if (reactToKoppels) {
-    #ifndef useUSBMIDI
-    Serial.printf("type: %d  Channel %d  data1 %d  data2 %d\n",type,channel,data1,data2);
-    #endif
-    if (type == midi::NoteOff ||type == midi::NoteOn){ // iff notes, check if there is a matching couple that is enabled
-      for (int i=0 ; i<g_KoppelRows;i++){
-          //Serial.printf("%d,%d,%d,%d\n",koppels[i][0],koppels[i][1],koppels[i][2],koppels[i][3]); //print out koppel array
-          if ((koppels[i][1]==true) && koppels[i][2]==channel ){// koppel enabled and has matching source channel
-          MIDI8.send(type, data1, data2, koppels[i][3]);
-          #ifdef useUSBMIDI
-          usbMIDI.send(type, data1, data2, koppels[i][3],0);
-          #endif
-          //todo:turn note on/off in midikoppelmem
-          } 
-      }
-      //turn note on/off in approprate midimem
-    }
-    if (type == midi::ControlChange && channel == koppelsChannel){
-      switch(data1) {//data1 is CC#, data 2 is Value
-        case 80: //Koppel aan
-          for (int i=0 ; i<g_KoppelRows;i++){
-            if (koppels[i][0]==data2){//find which koppel
-              koppels[i][1] = 1; //enable matching koppel in koppel mem
-              //TODO:turn on current notes from koppelSourcemem to koppelDestination
-            }
-          }
-          break;
-        case 81: //koppel uit
-          for (int i=0 ; i<g_KoppelRows;i++){
-            if (koppels[i][0]==data2){ //find which koppel
-              koppels[i][1] = 0;  //disable matching koppel in koppel mem"
-              //TODO:turn off current notes in destinationkoppelmem
-            }
-          }
-          break;
-        default:
-          break;
-      }
-    }
-  }
-}
 
 void setup() {
   #ifndef useUSBMIDI //if not using usbMIDI, we can use serial to debug.
@@ -133,7 +68,7 @@ void loop() {
     if (type != midi::SystemExclusive) {
       MIDI8.send(type, data1, data2, channel);
       //usbMIDI.send(type, data1, data2, channel,0);
-      handleKoppels(type,channel,data1,data2);
+      //koppel.handleKoppels(type,channel,data1,data2);
     }   
     activity = true;
   }
@@ -151,7 +86,7 @@ void loop() {
       #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
       #endif
-      handleKoppels(type,channel,data1,data2);
+      //koppel.handleKoppels(type,channel,data1,data2);
     }   
     activity = true;
   }
@@ -168,7 +103,7 @@ void loop() {
       #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
       #endif
-      handleKoppels(type,channel,data1,data2);
+      //koppel.handleKoppels(type,channel,data1,data2);
     }   
     activity = true;
   }
@@ -185,7 +120,7 @@ void loop() {
       #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
       #endif
-      handleKoppels(type,channel,data1,data2);  
+      //koppel.handleKoppels(type,channel,data1,data2);  
     }   
     activity = true;
   }
@@ -202,7 +137,7 @@ void loop() {
       #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
       #endif
-      handleKoppels(type,channel,data1,data2);   
+      //koppel.handleKoppels(type,channel,data1,data2);   
     }   
     activity = true;
   }
@@ -219,7 +154,7 @@ void loop() {
       #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
       #endif
-      handleKoppels(type,channel,data1,data2); 
+      //koppel.handleKoppels(type,channel,data1,data2); 
     }   
     activity = true;
   }
@@ -236,7 +171,7 @@ void loop() {
       #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
       #endif
-      handleKoppels(type,channel,data1,data2);    
+      //koppel.handleKoppels(type,channel,data1,data2);    
     }   
     activity = true;
   }
@@ -253,7 +188,7 @@ void loop() {
       #ifdef useUSBMIDI
       usbMIDI.send(type, data1, data2, channel,0);
       #endif
-      handleKoppels(type,channel,data1,data2);    
+      //koppel.handleKoppels(type,channel,data1,data2);    
     }   
     activity = true;
   }

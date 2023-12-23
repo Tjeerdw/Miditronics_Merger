@@ -1,36 +1,58 @@
 #include "miditools.h"
 
-notesMemory::notesMemory( MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& midiOutPort)
+#define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
+#define koppelsChannel 10
+
+KoppelUnit::KoppelUnit( MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& midiOutPort)
     :  _midiOutPort(midiOutPort)
-{
-    //noteMemA = 0;
-    //noteMemB = 0;
-    //noteMemC = 0;
-    //noteMemD = 0;
+{   
+    reactToKoppels = true;
+    g_KoppelRows = LEN(koppelList);
+     
 }
 
 
-bool notesMemory::isAnythingOn(int channel){
-    if(noteMemA[channel]==0 && noteMemB[channel]==0 && noteMemC[channel]==0 && noteMemD[channel]==0){
-        return false;
+void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2){
+  if (reactToKoppels) {
+    #ifndef useUSBMIDI
+    Serial.printf("type: %d  Channel %d  data1 %d  data2 %d\n",type,channel,data1,data2);
+    #endif
+    if (type == midi::NoteOff ||type == midi::NoteOn){ // iff notes, check if there is a matching couple that is enabled
+      for (int i=0 ; i<g_KoppelRows;i++){
+          //Serial.printf("%d,%d,%d,%d\n",koppels[i][0],koppels[i][1],koppels[i][2],koppels[i][3]); //print out koppel array
+          if ((koppelList[i][1]==true) && koppelList[i][2]==channel ){// koppel enabled and has matching source channel
+          _midiOutPort.send(type, data1, data2, koppelList[i][3]);
+          #ifdef useUSBMIDI
+          usbMIDI.send(type, data1, data2, koppels[i][3],0);
+          #endif
+          //todo:turn note on/off in midikoppelmem
+          } 
+      }
+      //turn note on/off in approprate midimem
     }
-    else{
-        return true;
+    if (type == midi::ControlChange && channel == koppelsChannel){
+      switch(data1) {//data1 is CC#, data 2 is Value
+        case 80: //Koppel aan
+          for (int i=0 ; i<g_KoppelRows;i++){
+            if (koppelList[i][0]==data2){//find which koppel
+              koppelList[i][1] = 1; //enable matching koppel in koppel mem
+              //TODO:turn on current notes from koppelSourcemem to koppelDestination
+            }
+          }
+          break;
+        case 81: //koppel uit
+          for (int i=0 ; i<g_KoppelRows;i++){
+            if (koppelList[i][0]==data2){ //find which koppel
+              koppelList[i][1] = 0;  //disable matching koppel in koppel mem"
+              //TODO:turn off current notes in destinationkoppelmem
+            }
+          }
+          break;
+        default:
+          break;
+      }
     }
+  }
 }
-
-void notesMemory::koppelOnNotes(int sourceChannel, int DestinationChannel){
-    //go through source channelmem and send note on to dest channel
-    //also send to memory
-}
-
-void notesMemory::koppelOffNotes(int Destinationchannel){
-    //
-}
-
-void notesMemory::putNoteInMemory(int channel, int note, bool fromKoppel, bool noteOn){
-
-}
-
 
 
