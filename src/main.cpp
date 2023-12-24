@@ -4,7 +4,8 @@
 #include <MIDI.h>
 #include <miditools.h>
 
-//#define useUSBMIDI
+#define useUSBMIDI
+
 
 
 bool reactToKoppels = true;
