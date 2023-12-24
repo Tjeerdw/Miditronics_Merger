@@ -20,12 +20,12 @@ class KoppelUnit{
     public:
         KoppelUnit(MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& midiOutPort);
         void handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2, bool sendToUSB);
-        void koppelNoteOn(byte note, byte velocity, int destinationchannel);
-        void koppelNoteOff(byte note, byte velocity, int destinationchannel);
+        void koppelNoteOn(midi::MidiType type, byte note, byte velocity, int destinationchannel,bool sendToUSB, int koppelListIndex);
+        void koppelNoteOff(midi::MidiType type, byte note, byte velocity, int destinationchannel, bool sendToUSB,int koppelListIndex);
 
     private:
         MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& _midiOutPort;
-        uint32_t notesMem [6][128]; //6 organs, 128 notes each, 32 bits for sources each
+        uint32_t notesMem [7][128]; //6 organs, 128 notes each, 32 bits for sources each, organ 0 not used
         bool reactToKoppels;
         int koppelList[21][5] =
         {
