@@ -6,6 +6,7 @@
 #include "miditools.h"
 
 //#define SERIALDEBUG
+#define useUSBMIDI
 
 #define LEN(arr) ((int) (sizeof (arr) / sizeof (arr)[0]))
 #define koppelsChannel 10

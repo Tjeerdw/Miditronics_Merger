@@ -6,8 +6,6 @@
 
 #define useUSBMIDI
 
-
-
 bool reactToKoppels = true;
 
 // Create the Serial MIDI ports
@@ -25,7 +23,6 @@ KoppelUnit koppel(MIDI8);
  
 // A variable to know how long the LED has been turned on
 elapsedMillis ledOnMillis;
-
 
 void setup() {
   #ifndef useUSBMIDI //if not using usbMIDI, we can use serial to debug.
@@ -52,7 +49,6 @@ void setup() {
   digitalWriteFast(13, HIGH); // LED on
   delay(500);
   digitalWriteFast(13, LOW);
-
 }
 
 void loop() {
