@@ -55,7 +55,7 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
             }
         }
     }
-    else if (type == midi::ControlChange && channel == (registerChannelA || registerChannelB)){ //register message incoming, just pass through
+    else if (type == midi::ControlChange && ((channel == registerChannelA) | channel == registerChannelB)){ //register message incoming, just pass through
         
     _midiOutPort.send(type, data1, data2,channel); // send note to desitnation channel 
         #ifdef useUSBMIDI
