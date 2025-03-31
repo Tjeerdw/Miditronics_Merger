@@ -17,10 +17,10 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
         for (int i=0 ; i<g_KoppelRows;i++){ //go through koppelList, find matching source channel and enabled, could be more than one
             if ((koppelList[i][KL_Enabled]==true) && koppelList[i][KL_Source]==channel ){// koppel enabled and has matching source channel
                 if(type == midi::NoteOn){
-                    koppelNoteOn(type, data1,data2,koppelList[i][KL_Destination],sendToUSB,i);
+                    koppelNoteOn(type, data1,data2,koppelList[i][KL_Destination],sendToUSB,i,koppelList[i][KL_Transpose]);
                 }
                 else if(type == midi::NoteOff){
-                    koppelNoteOff(type, data1,data2,koppelList[i][KL_Destination],sendToUSB,i);
+                    koppelNoteOff(type, data1,data2,koppelList[i][KL_Destination],sendToUSB,i,koppelList[i][KL_Transpose]);
                 }
             } 
         }
@@ -33,12 +33,13 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
                 int KL_sourceChannel = koppelList[i][KL_Source];
                 int KL_destinationChannel = koppelList[i][KL_Destination];
                 int KL_koppelbitje = koppelList[i][KL_KoppelBit];
+                int KL_transpose = koppelList[i][KL_Transpose];
                 switch(data1) { //koppel on or off
                     case 80: //Koppel aan
                         koppelList[i][KL_Enabled] = 1; //enable matching koppel in koppel mem
                         for ( int j=0 ; j<g_NumberOfNotes ; j++){ //go though all notes in sourcechannel
                             if (notesMem[KL_sourceChannel][j] & 1<<1){ //search for 1:1 koppel bits in source channel, "was er al iets aan"
-                                koppelNoteOn(midi::NoteOn,j,data2,KL_destinationChannel, sendToUSB, i); 
+                                koppelNoteOn(midi::NoteOn,j,data2,KL_destinationChannel, sendToUSB, i,KL_transpose); 
                             }
                         }
                         
@@ -47,7 +48,7 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
                         koppelList[i][KL_Enabled] = 0; //disable matching koppel in koppel mem
                         for ( int j=0 ; j<g_NumberOfNotes ; j++){ //go though all notes in destination channel
                             if (notesMem[KL_destinationChannel][j] & 1<<KL_koppelbitje){  //search for koppelbits on in destination channel "staat er iets aan dat uit moet
-                                koppelNoteOff(midi::NoteOff,j,data2,KL_destinationChannel, sendToUSB, i); 
+                                koppelNoteOff(midi::NoteOff,j,data2,KL_destinationChannel, sendToUSB, i,KL_transpose); 
                             }
                         }
                         break;
@@ -66,32 +67,32 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
     }
 }
 
-void KoppelUnit::koppelNoteOn(midi::MidiType type, byte note, byte velocity, int destinationchannel, bool sendToUSB, int koppelListIndex){
+void KoppelUnit::koppelNoteOn(midi::MidiType type, byte note, byte velocity, int destinationchannel, bool sendToUSB, int koppelListIndex, int transpose){
     #ifdef SERIALDEBUG
     Serial.printf("koppelNoteOn OUT: type: %d  Channel %d  data1 %d  data2 %d\n",type,destinationchannel,note,velocity);
     printNotesMem(destinationchannel);
     #endif
-    if(notesMem[destinationchannel][note]==0){     //if note in desination mem is off
-        _midiOutPort.send(type, note, velocity,destinationchannel); // send note to desitnation channel 
+    if(notesMem[destinationchannel][note+transpose]==0){     //if note in desination mem is off
+        _midiOutPort.send(type, note+transpose, velocity,destinationchannel); // send note to desitnation channel 
         #ifdef useUSBMIDI
         if (sendToUSB){
-            usbMIDI.send(type, note, velocity,destinationchannel,0); //also to usb
+            usbMIDI.send(type, note+transpose, velocity,destinationchannel,0); //also to usb
         }
         #endif
     }
-    notesMem[destinationchannel][note] |= 1<<koppelList[koppelListIndex][KL_KoppelBit]; //  edit note in destination notesmem
+    notesMem[destinationchannel][note+transpose] |= 1<<koppelList[koppelListIndex][KL_KoppelBit]; //  edit note in destination notesmem
 }
 
-void KoppelUnit::koppelNoteOff(midi::MidiType type, byte note, byte velocity, int destinationchannel, bool sendToUSB, int koppelListIndex){
+void KoppelUnit::koppelNoteOff(midi::MidiType type, byte note, byte velocity, int destinationchannel, bool sendToUSB, int koppelListIndex, int transpose){
     #ifdef SERIALDEBUG
     Serial.printf("koppelNoteOff OUT: type: %d  Channel %d  data1 %d  data2 %d\n",type,destinationchannel,note,velocity);
     #endif
-    notesMem[destinationchannel][note] &= ~(1<< koppelList[koppelListIndex][KL_KoppelBit]); //  edit note in destination notesmem
-    if(notesMem[destinationchannel][note]==0){
-        _midiOutPort.send(type, note, velocity,destinationchannel); // send note to desitnation channel 
+    notesMem[destinationchannel][note+transpose] &= ~(1<< koppelList[koppelListIndex][KL_KoppelBit]); //  edit note in destination notesmem
+    if(notesMem[destinationchannel][note+transpose]==0){
+        _midiOutPort.send(type, note+transpose, velocity,destinationchannel); // send note to desitnation channel 
         #ifdef useUSBMIDI
         if (sendToUSB){
-            usbMIDI.send(type, note, velocity,destinationchannel,0); //also to usb
+            usbMIDI.send(type, note+transpose, velocity,destinationchannel,0); //also to usb
         }
         #endif
     }

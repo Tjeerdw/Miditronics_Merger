@@ -18,14 +18,14 @@
 #define KL_Source 2
 #define KL_Destination 3
 #define KL_KoppelBit 4
-#define KL_Transpose
+#define KL_Transpose 5
 
 class KoppelUnit{
     public:
         KoppelUnit(MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& midiOutPort);
         void handleKoppels(midi::MidiType type,  midi::Channel channel, byte data1, byte data2, bool sendToUSB);
-        void koppelNoteOn(midi::MidiType type, byte note, byte velocity, int destinationchannel,bool sendToUSB, int koppelListIndex);
-        void koppelNoteOff(midi::MidiType type, byte note, byte velocity, int destinationchannel, bool sendToUSB,int koppelListIndex);
+        void koppelNoteOn(midi::MidiType type, byte note, byte velocity, int destinationchannel,bool sendToUSB, int koppelListIndex, int transpose);
+        void koppelNoteOff(midi::MidiType type, byte note, byte velocity, int destinationchannel, bool sendToUSB,int koppelListIndex, int transpose);
         void printNotesMem(int channel);
 
     private:
@@ -34,7 +34,7 @@ class KoppelUnit{
         bool reactToKoppels;
         int koppelList[24][6] =
         {
-            // Midi Value, enabled, note source ch, note destination ch, noteMembit
+            // Midi Value, enabled, note source ch, note destination ch, noteMembit, transpose
             {58,1,1,1,1,0},   // I+I
             {24,0,6,1,2,0},   // P+I
             {59,1,2,2,1,0},   // II+II
