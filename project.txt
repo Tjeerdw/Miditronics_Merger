@@ -1,0 +1,14 @@
+Miditronics Merger — Project Log
+==================================
+
+2026-03-12  Initial codebase review
+  - Read and understood full codebase (main.cpp, miditools.h, miditools.cpp)
+  - Updated CLAUDE.md to document routing logic: manual koppels, note memory system,
+    octave couplings, register passthrough
+  - Last known working commit: 6ac9ff4 (2023-12-29) "fix in register thrhough"
+  - 2025 commits (6f0d534, 1bcac67) added octave coupling entries and transpose logic
+    but are UNTESTED and contain bugs:
+      1. note+transpose can go negative → array out-of-bounds on notesMem[ch][note+transpose]
+      2. koppel-disable NoteOff loop double-applies transpose (j is already transposed index)
+  - Decision: do not use/deploy the 2025 transposing code until bugs are fixed
+  - Next task: fix transposing bugs (to be done on 'bugfix' branch, pending user request)
