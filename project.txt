@@ -7,8 +7,33 @@ Miditronics Merger — Project Log
     octave couplings, register passthrough
   - Last known working commit: 6ac9ff4 (2023-12-29) "fix in register thrhough"
   - 2025 commits (6f0d534, 1bcac67) added octave coupling entries and transpose logic
-    but are UNTESTED and contain bugs:
-      1. note+transpose can go negative → array out-of-bounds on notesMem[ch][note+transpose]
-      2. koppel-disable NoteOff loop double-applies transpose (j is already transposed index)
+    but are UNTESTED and BUGGY — see bug list below.
   - Decision: do not use/deploy the 2025 transposing code until bugs are fixed
-  - Next task: fix transposing bugs (to be done on 'bugfix' branch, pending user request)
+
+Transposing Bugs (to fix on 'bugfix' branch)
+---------------------------------------------
+
+BUG 1: Negative array index for low notes  (miditools.cpp:75, :90)
+  In koppelNoteOn and koppelNoteOff, notesMem[dest][note+transpose] is used directly.
+  With transpose=-12, notes 0-11 produce a negative index → memory corruption → stuck notes.
+  Fix: add bounds check before using the index — skip the note if note+transpose < 0 or > 127.
+
+BUG 2: Shared KL_KoppelBit between transposed and non-transposed koppels  (miditools.h:42,46,48)
+  The following pairs share the same bit on the same destination channel:
+    I+II (bit 2, dest ch2) and I+II 16'  (bit 2, dest ch2)  ← should be bit 4
+    I+III (bit 2, dest ch3) and I+III 16' (bit 2, dest ch3)  ← should be bit 5
+    II+III (bit 3, dest ch3) and II+III 16' (bit 3, dest ch3) ← should be bit 6
+  When two notes 12 semitones apart are held simultaneously with both koppels enabled,
+  both write to the same notesMem slot with the same bit. Releasing one clears the bit
+  and sends NoteOff even though the other koppel is still holding the note → premature
+  NoteOff, then note is never turned off when the second key is released.
+  Fix: assign unique KL_KoppelBit values to the three octave koppels (4, 5, 6).
+
+BUG 3: Double-apply of transpose in CC81 koppel-disable path  (miditools.cpp:51)
+  When disabling a koppel via CC81, the code scans notesMem[destChannel][j] and calls:
+    koppelNoteOff(NoteOff, j, ..., KL_transpose)
+  But j is already the transposed note index (stored as note+transpose by koppelNoteOn).
+  Inside koppelNoteOff, transpose is applied again: notesMem[dest][j+transpose] → wrong slot.
+  The NoteOff message also goes to the wrong pitch. Notes are not turned off when the koppel
+  is disabled while keys are held.
+  Fix: in the CC81 loop, call koppelNoteOff with transpose=0 (j is already the final pitch).
