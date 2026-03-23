@@ -55,6 +55,25 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
                 }
             }
         }
+    if (data1 == 80 && data2 == panicNoteValue) {        // Mute all notes: NoteOff pitch=127 to channels 1-6
+        for (int ch = 1; ch <= 6; ch++) {
+            _midiOutPort.send(midi::NoteOff, 127, 127, ch);
+            #ifdef useUSBMIDI
+            if (sendToUSB) usbMIDI.send(midi::NoteOff, 127, 127, ch, 0);
+            #endif
+        }
+        memset(notesMem, 0, sizeof(notesMem));
+    }
+    else if (data1 == 80 && data2 == registersOffValue) { // All registers off: CC81 value=127 to channels 8 and 9
+        _midiOutPort.send(midi::ControlChange, 81, 127, registerChannelA);
+        _midiOutPort.send(midi::ControlChange, 81, 127, registerChannelB);
+        #ifdef useUSBMIDI
+        if (sendToUSB) {
+            usbMIDI.send(midi::ControlChange, 81, 127, registerChannelA, 0);
+            usbMIDI.send(midi::ControlChange, 81, 127, registerChannelB, 0);
+        }
+        #endif
+    }
     }
     else if (type == midi::ControlChange && ((channel == registerChannelA) | channel == registerChannelB)){ //register message incoming, just pass through
         
@@ -89,7 +108,7 @@ void KoppelUnit::koppelNoteOff(midi::MidiType type, byte note, byte velocity, in
     #endif
     notesMem[destinationchannel][note+transpose] &= ~(1<< koppelList[koppelListIndex][KL_KoppelBit]); //  edit note in destination notesmem
     if(notesMem[destinationchannel][note+transpose]==0){
-        _midiOutPort.send(type, note+transpose, velocity,destinationchannel); // send note to desitnation channel 
+        _midiOutPort.send(type, note+transpose, velocity,destinationchannel); // send note to desitnation channel
         #ifdef useUSBMIDI
         if (sendToUSB){
             usbMIDI.send(type, note+transpose, velocity,destinationchannel,0); //also to usb

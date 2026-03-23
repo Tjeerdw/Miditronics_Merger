@@ -29,6 +29,16 @@ BUG 2: Shared KL_KoppelBit between transposed and non-transposed koppels  (midit
   NoteOff, then note is never turned off when the second key is released.
   Fix: assign unique KL_KoppelBit values to the three octave koppels (4, 5, 6).
 
+2026-03-21  Panic and all-registers-off feature (branch: panicMode)
+  - Added two new commands on MIDI channel 10, CC80:
+      value=41 → send NoteOff pitch=127 to all note channels (1–6), clear notesMem
+      value=42 → send CC81 value=127 to register channels (8 and 9)
+  - These are triggered by physical switches on an input module sending CC on ch10
+  - Added #define panicNoteValue 41 and registersOffValue 42 in miditools.h
+  - Handling is inside the existing koppelsChannel block in handleKoppels()
+  - Values 41 and 42 are not used by any koppel entry — no conflict
+  - Status: awaiting hardware test
+
 BUG 3: Double-apply of transpose in CC81 koppel-disable path  (miditools.cpp:51)
   When disabling a koppel via CC81, the code scans notesMem[destChannel][j] and calls:
     koppelNoteOff(NoteOff, j, ..., KL_transpose)

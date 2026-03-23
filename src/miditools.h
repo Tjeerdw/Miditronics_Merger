@@ -12,6 +12,8 @@
 #define koppelsChannel 10
 #define registerChannelA 8
 #define registerChannelB 9
+#define panicNoteValue    41
+#define registersOffValue 42
 
 #define KL_Value 0
 #define KL_Enabled 1
