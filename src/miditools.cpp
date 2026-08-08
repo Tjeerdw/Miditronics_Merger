@@ -91,27 +91,33 @@ void KoppelUnit::koppelNoteOn(midi::MidiType type, byte note, byte velocity, int
     Serial.printf("koppelNoteOn OUT: type: %d  Channel %d  data1 %d  data2 %d\n",type,destinationchannel,note,velocity);
     printNotesMem(destinationchannel);
     #endif
-    if(notesMem[destinationchannel][note+transpose]==0){     //if note in desination mem is off
-        _midiOutPort.send(type, note+transpose, velocity,destinationchannel); // send note to desitnation channel 
+    int destNote = note + transpose; //bound to 0..127, keeps notesMem index and midi pitch valid
+    if (destNote < 0) destNote = 0;
+    if (destNote > 127) destNote = 127;
+    if(notesMem[destinationchannel][destNote]==0){     //if note in desination mem is off
+        _midiOutPort.send(type, destNote, velocity,destinationchannel); // send note to desitnation channel
         #ifdef useUSBMIDI
         if (sendToUSB){
-            usbMIDI.send(type, note+transpose, velocity,destinationchannel,0); //also to usb
+            usbMIDI.send(type, destNote, velocity,destinationchannel,0); //also to usb
         }
         #endif
     }
-    notesMem[destinationchannel][note+transpose] |= 1<<koppelList[koppelListIndex][KL_KoppelBit]; //  edit note in destination notesmem
+    notesMem[destinationchannel][destNote] |= 1<<koppelList[koppelListIndex][KL_KoppelBit]; //  edit note in destination notesmem
 }
 
 void KoppelUnit::koppelNoteOff(midi::MidiType type, byte note, byte velocity, int destinationchannel, bool sendToUSB, int koppelListIndex, int transpose){
     #ifdef SERIALDEBUG
     Serial.printf("koppelNoteOff OUT: type: %d  Channel %d  data1 %d  data2 %d\n",type,destinationchannel,note,velocity);
     #endif
-    notesMem[destinationchannel][note+transpose] &= ~(1<< koppelList[koppelListIndex][KL_KoppelBit]); //  edit note in destination notesmem
-    if(notesMem[destinationchannel][note+transpose]==0){
-        _midiOutPort.send(type, note+transpose, velocity,destinationchannel); // send note to desitnation channel
+    int destNote = note + transpose; //bound to 0..127, keeps notesMem index and midi pitch valid
+    if (destNote < 0) destNote = 0;
+    if (destNote > 127) destNote = 127;
+    notesMem[destinationchannel][destNote] &= ~(1<< koppelList[koppelListIndex][KL_KoppelBit]); //  edit note in destination notesmem
+    if(notesMem[destinationchannel][destNote]==0){
+        _midiOutPort.send(type, destNote, velocity,destinationchannel); // send note to desitnation channel
         #ifdef useUSBMIDI
         if (sendToUSB){
-            usbMIDI.send(type, note+transpose, velocity,destinationchannel,0); //also to usb
+            usbMIDI.send(type, destNote, velocity,destinationchannel,0); //also to usb
         }
         #endif
     }

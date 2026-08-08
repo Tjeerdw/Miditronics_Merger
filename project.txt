@@ -39,6 +39,15 @@ BUG 2: Shared KL_KoppelBit between transposed and non-transposed koppels  (midit
   - Values 41 and 42 are not used by any koppel entry — no conflict
   - Status: awaiting hardware test
 
+2026-08-08  Transpose bug fixes (branch: panicMode)
+  - BUG 2 FIXED by user (commit e624ab9): unique KL_KoppelBit per destination block,
+    blocks renumbered sequentially (own=1, then sources in order, pedal last).
+  - BUG 1 FIXED: koppelNoteOn/Off now compute destNote = note + transpose and clamp
+    it to 0..127 (clamp instead of skip — organ never plays near the edges, so
+    clamping is functionally adequate and keeps notesMem index and MIDI pitch valid).
+  - BUG 3 still OPEN (double transpose in CC81 disable loop).
+  - Build verified with PlatformIO (Teensy 4.1). Status: awaiting hardware test.
+
 BUG 3: Double-apply of transpose in CC81 koppel-disable path  (miditools.cpp:51)
   When disabling a koppel via CC81, the code scans notesMem[destChannel][j] and calls:
     koppelNoteOff(NoteOff, j, ..., KL_transpose)
