@@ -55,9 +55,10 @@ BUG 2: Shared KL_KoppelBit between transposed and non-transposed koppels  (midit
   - BUG 5 FIXED: handleKoppels now converts NoteOn with velocity 0 to NoteOff
     at entry (miditools.cpp:16). Covers the USB input (Teensy usbMIDI does not
     convert; the serial inputs' MIDI library already does). Build verified.
-  - Cleanup candidates: reactToKoppels is dead code (class member + global in
-    main.cpp); miditools.h includes itself; '|' instead of '||' on
-    miditools.cpp:78 (works by precedence); src/desktop.ini should be removed.
+  - Cleanup DONE by user: removed dead reactToKoppels (class + main.cpp global),
+    removed self-include in miditools.h, fixed '|' -> '||' in register
+    passthrough. desktop.ini gitignored and untracked. Build clean, no warnings,
+    binary identical.
   - Verified OK: bug 1-3 fixes consistent, koppel bits unique per destination,
     1<<1 own-koppel scan convention holds, no duplicate koppel CC values,
     panic values 41/42 conflict-free, all notesMem indices bounded.

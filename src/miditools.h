@@ -3,7 +3,6 @@
 
 #include "Arduino.h"
 #include "MIDI.h"
-#include "miditools.h"
 
 //#define SERIALDEBUG
 #define useUSBMIDI
@@ -33,7 +32,6 @@ class KoppelUnit{
     private:
         MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& _midiOutPort;
         uint32_t notesMem [7][128]; //6 organs, 128 notes each, 32 bits for sources each, organ 0 not used
-        bool reactToKoppels;
         int koppelList[24][6] =
         {
             // Midi Value, enabled, note source ch, note destination ch, noteMembit, transpose

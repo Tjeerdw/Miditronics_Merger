@@ -3,7 +3,6 @@
 KoppelUnit::KoppelUnit( MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& midiOutPort)
     :  _midiOutPort(midiOutPort)
 {   
-    reactToKoppels = true;
     g_KoppelRows = LEN(koppelList);
     g_NumberOfNotes = 128;
 }
@@ -78,7 +77,7 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
         #endif
     }
     }
-    else if (type == midi::ControlChange && ((channel == registerChannelA) | channel == registerChannelB)){ //register message incoming, just pass through
+    else if (type == midi::ControlChange && ((channel == registerChannelA) || channel == registerChannelB)){ //register message incoming, just pass through
         
     _midiOutPort.send(type, data1, data2,channel); // send note to desitnation channel 
         #ifdef useUSBMIDI
