@@ -12,7 +12,10 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
     #ifdef SERIALDEBUG
     Serial.printf("HandleKoppel IN: type: %d  Channel %d  data1 %d  data2 %d\n",type,channel,data1,data2);
     #endif
-    
+
+    if (type == midi::NoteOn && data2 == 0){ //NoteOn with velocity 0 means NoteOff in standard MIDI; usbMIDI passes it through unconverted
+        type = midi::NoteOff;
+    }
     if (type == midi::NoteOff ||type == midi::NoteOn){ //note message incoming
         for (int i=0 ; i<g_KoppelRows;i++){ //go through koppelList, find matching source channel and enabled, could be more than one
             if ((koppelList[i][KL_Enabled]==true) && koppelList[i][KL_Source]==channel ){// koppel enabled and has matching source channel

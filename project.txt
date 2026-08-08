@@ -52,10 +52,9 @@ BUG 2: Shared KL_KoppelBit between transposed and non-transposed koppels  (midit
 2026-08-08  Second bug hunt (branch: panicMode) — findings, not yet fixed
   - BUG 4 FIXED by user: hot-enable/disable loops passed data2 (the koppel CC
     value) as note velocity (miditools.cpp:42,51); now pass 127 per protocol.
-  - BUG 5: NoteOn with velocity 0 (= NoteOff in standard MIDI) may reach
-    koppelNoteOn as NoteOn via the USB input (Teensy usbMIDI does not convert;
-    the serial inputs' MIDI library does). Would register a silent note as ON
-    → stuck state. Fix: in handleKoppels, treat NoteOn with data2==0 as NoteOff.
+  - BUG 5 FIXED: handleKoppels now converts NoteOn with velocity 0 to NoteOff
+    at entry (miditools.cpp:16). Covers the USB input (Teensy usbMIDI does not
+    convert; the serial inputs' MIDI library already does). Build verified.
   - Cleanup candidates: reactToKoppels is dead code (class member + global in
     main.cpp); miditools.h includes itself; '|' instead of '||' on
     miditools.cpp:78 (works by precedence); src/desktop.ini should be removed.
