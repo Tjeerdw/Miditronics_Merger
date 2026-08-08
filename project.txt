@@ -45,8 +45,9 @@ BUG 2: Shared KL_KoppelBit between transposed and non-transposed koppels  (midit
   - BUG 1 FIXED: koppelNoteOn/Off now compute destNote = note + transpose and clamp
     it to 0..127 (clamp instead of skip — organ never plays near the edges, so
     clamping is functionally adequate and keeps notesMem index and MIDI pitch valid).
-  - BUG 3 still OPEN (double transpose in CC81 disable loop).
-  - Build verified with PlatformIO (Teensy 4.1). Status: awaiting hardware test.
+  - BUG 3 FIXED by user: CC81 disable loop now calls koppelNoteOff with transpose=0,
+    since j from the destination-channel scan is already the transposed pitch.
+  - All three transposing bugs are now addressed. Status: awaiting hardware test.
 
 BUG 3: Double-apply of transpose in CC81 koppel-disable path  (miditools.cpp:51)
   When disabling a koppel via CC81, the code scans notesMem[destChannel][j] and calls:
