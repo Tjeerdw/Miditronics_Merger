@@ -39,7 +39,7 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
                         koppelList[i][KL_Enabled] = 1; //enable matching koppel in koppel mem
                         for ( int j=0 ; j<g_NumberOfNotes ; j++){ //go though all notes in sourcechannel
                             if (notesMem[KL_sourceChannel][j] & 1<<1){ //search for 1:1 koppel bits in source channel, "was er al iets aan"
-                                koppelNoteOn(midi::NoteOn,j,data2,KL_destinationChannel, sendToUSB, i,KL_transpose); 
+                                koppelNoteOn(midi::NoteOn,j,127,KL_destinationChannel, sendToUSB, i,KL_transpose); 
                             }
                         }
                         
@@ -48,7 +48,7 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
                         koppelList[i][KL_Enabled] = 0; //disable matching koppel in koppel mem
                         for ( int j=0 ; j<g_NumberOfNotes ; j++){ //go though all notes in destination channel
                             if (notesMem[KL_destinationChannel][j] & 1<<KL_koppelbitje){  //search for koppelbits on in destination channel "staat er iets aan dat uit moet
-                                koppelNoteOff(midi::NoteOff,j,data2,KL_destinationChannel, sendToUSB, i,0); //no need to transpose since it allready has been.
+                                koppelNoteOff(midi::NoteOff,j,127,KL_destinationChannel, sendToUSB, i,0); //no need to transpose since it allready has been.
                             }
                         }
                         break;
