@@ -29,6 +29,11 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
     
     }
     else if (type == midi::ControlChange && channel == koppelsChannel){ //koppel message incoming
+    #ifdef useUSBMIDI
+    if (sendToUSB){
+        usbMIDI.send(type, data1, data2, channel, 0); //echo koppel commands to usb for monitoring
+    }
+    #endif
 
     for (int i=0 ; i<g_KoppelRows;i++){ //go through koppelList, find matching koppel
             if (koppelList[i][KL_Value]==data2){ //match

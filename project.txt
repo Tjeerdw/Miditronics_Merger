@@ -59,6 +59,10 @@ BUG 2: Shared KL_KoppelBit between transposed and non-transposed koppels  (midit
     removed self-include in miditools.h, fixed '|' -> '||' in register
     passthrough. desktop.ini gitignored and untracked. Build clean, no warnings,
     binary identical.
+  - ADDED: channel-10 CC messages (koppel/panic commands) are now echoed to USB
+    for monitoring with MIDI-OX (miditools.cpp, top of koppelsChannel block).
+    USB only — Serial8 output bus unchanged. No echo loop: sendToUSB is false
+    for USB-originated messages. Build verified.
   - Verified OK: bug 1-3 fixes consistent, koppel bits unique per destination,
     1<<1 own-koppel scan convention holds, no duplicate koppel CC values,
     panic values 41/42 conflict-free, all notesMem indices bounded.
