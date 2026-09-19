@@ -32,7 +32,7 @@ class KoppelUnit{
     private:
         MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& _midiOutPort;
         uint32_t notesMem [7][128]; //6 organs, 128 notes each, 32 bits for sources each, organ 0 not used
-        int koppelList[24][6] =
+        int koppelList[27][6] =
         {
             // Midi Value, enabled, note source ch, note destination ch, noteMembit, transpose
             {58,1,1,1,1,0},   // I+I
@@ -43,19 +43,22 @@ class KoppelUnit{
             {25,0,6,2,4,0},   // P+II  
             {60,1,3,3,1,0},   // III+III
             {2 ,0,1,3,2,0},   // I+III
-            {6 ,0,1,3,3,-12},   // I+III 16'
+            {6 ,0,1,3,3,-12}, // I+III 16'
             {7 ,0,2,3,4,0},   // II+III
-            {9 ,0,2,3,5,-12},   // II+III 16'
+            {9 ,0,2,3,5,-12}, // II+III 16'
             {26,0,6,3,6,0},   // P+III
             {61,1,4,4,1,0},   // IV+IV
             {3 ,0,1,4,2,0},   // I+IV
-            {8 ,0,2,4,3,0},   // II+IV
+            {12 ,0,1,4,3,-12}, // I+IV 16' 
+            {8 ,0,2,4,4,0},   // II+IV
+            {35 ,0,2,4,5,-12},   // II+IV 16'
             {11,0,3,4,4,0},   // III+IV
             {27,0,6,4,5,0},   // P+IV
             {62,1,5,5,1,0},   // V+V
             {20,0,1,5,2,0},   // I+V
             {21,0,2,5,3,0},   // II+V
             {22,0,3,5,4,0},   // III+V
+            {36,0,3,5,4,-12},   // III+V 16' 
             {29,0,4,5,5,0},   // IV+V
             {28,0,6,5,6,0},   // P+V 
             {63,1,6,6,1,0},   // P+P

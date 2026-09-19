@@ -75,3 +75,20 @@ BUG 3: Double-apply of transpose in CC81 koppel-disable path  (miditools.cpp:51)
   The NoteOff message also goes to the wrong pitch. Notes are not turned off when the koppel
   is disabled while keys are held.
   Fix: in the CC81 loop, call koppelNoteOff with transpose=0 (j is already the final pitch).
+
+2026-09-12  Review of the 3 sub-octave (16') koppels — no changes made
+  - Entries checked: I+II 16' (CC4, src1->dst2, bit3), I+III 16' (CC6, src1->dst3, bit3),
+    II+III 16' (CC9, src2->dst3, bit5), all transpose -12.
+  - Verified by script over koppelList: no duplicate CC values, no duplicate
+    (destination, koppelbit) pairs, no duplicate (src,dst,transpose) rows,
+    all bits 1..6 (well within the 32-bit notesMem mask), 24 rows as declared.
+  - Runtime paths re-traced: normal note routing, hot-enable (scans source bit 1,
+    applies transpose in koppelNoteOn) and hot-disable (scans destination bit,
+    passes transpose=0 because j is already the shifted pitch) are all consistent.
+  - Build clean (pio run, teensy41, no warnings).
+  - Remaining caveats (accepted, not bugs in the new entries):
+    * source notes 0..11 all clamp to destNote 0; harmless for real organ ranges.
+    * couplers do not cascade: a note coupled onto ch2 by I+II is not re-coupled
+      to ch3 by II+III 16'. Same as every other koppel in the list, by design.
+    * there is no same-manual 16' (I+I 16', II+II 16'); only cross-manual ones exist.
+  - Status: awaiting hardware test.
