@@ -31,8 +31,8 @@ class KoppelUnit{
 
     private:
         MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial>>& _midiOutPort;
-        uint32_t notesMem [7][128]; //6 organs, 128 notes each, 32 bits for sources each, organ 0 not used
-        int koppelList[27][6] =
+        uint32_t notesMem [8][128]; //7 organs (ch1-6 + ch7 AltaarOrgel), 128 notes each, 32 bits for sources each, organ 0 not used
+        int koppelList[34][6] =
         {
             // Midi Value, enabled, note source ch, note destination ch, noteMembit, transpose
             {58,1,1,1,1,0},   // I+I
@@ -62,6 +62,14 @@ class KoppelUnit{
             {29,0,4,5,5,0},   // IV+V
             {28,0,6,5,6,0},   // P+V 
             {63,1,6,6,1,0},   // P+P
+            // AltaarOrgel (ch7): no own keyboard, only played via couplers. bit 1 kept free for a possible A+A
+            {49,0,1,7,2,0},   // I+A
+            {50,0,2,7,3,0},   // II+A
+            {51,0,3,7,4,0},   // III+A
+            {52,0,4,7,5,0},   // IV+A
+            {53,0,5,7,6,0},   // V+A
+            {54,0,6,7,7,0},   // P+A
+            {57,1,7,7,1,0},   // A+A
         };
         int g_KoppelRows;
         int g_NumberOfNotes;

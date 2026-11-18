@@ -62,8 +62,8 @@ void KoppelUnit::handleKoppels(midi::MidiType type,  midi::Channel channel, byte
                 }
             }
         }
-    if (data1 == 80 && data2 == panicNoteValue) {        // Mute all notes: NoteOff pitch=127 to channels 1-6
-        for (int ch = 1; ch <= 6; ch++) {
+    if (data1 == 80 && data2 == panicNoteValue) {        // Mute all notes: NoteOff pitch=127 to channels 1-7
+        for (int ch = 1; ch <= 7; ch++) {
             _midiOutPort.send(midi::NoteOff, 127, 127, ch);
             #ifdef useUSBMIDI
             if (sendToUSB) usbMIDI.send(midi::NoteOff, 127, 127, ch, 0);

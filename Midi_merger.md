@@ -29,9 +29,11 @@ All routing logic lives in KoppelUnit (miditools.h / miditools.cpp).
 
 Routing Logic — Koppels (organ couplers)
 The merger implements organ coupler logic. Channels map to manuals/pedal:
-  Ch1=Manual I, Ch2=Manual II, Ch3=Manual III, Ch4=Manual IV, Ch5=Manual V, Ch6=Pedal
+  Ch1=Manual I, Ch2=Manual II, Ch3=Manual III, Ch4=Manual IV, Ch5=Manual V, Ch6=Pedal, Ch7=AltaarOrgel
+  AltaarOrgel (ch7) has no own keyboard; it is played only via couplers I+A..P+A (koppel IDs 49-54); A+A self-coupler = 57.
+  Its registers use free register numbers on ch8/ch9 (plain passthrough).
 
-Manual Koppels: A koppelList (24 entries) defines which source channel routes to which destination channel.
+Manual Koppels: A koppelList (34 entries) defines which source channel routes to which destination channel.
   Example: koppel "I+II" routes Manual I notes also to Manual II output channel.
   Koppels are enabled/disabled at runtime via CC80 (on) / CC81 (off) on MIDI channel 10, where data2 is the koppel ID value.
 
